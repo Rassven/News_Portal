@@ -1,0 +1,41 @@
+u1 = User.objects.create_user(username='Имя 1')
+u2 = User.objects.create_user(username='Имя 2')
+
+a1 = Author.objects.create(author_user=u1)
+a2 = Author.objects.create(author_user=u2)
+
+c1 = Category.objects.create(category_name='Категория 1')
+c2 = Category.objects.create(category_name='Категория 2')
+c3 = Category.objects.create(category_name='Категория 3')
+c4 = Category.objects.create(category_name='Категория 4')
+
+p1 = Post.objects.create(post_type = 'a', title = 'Заголовок 1', text = 'Текст 1', author = a1)
+p2 = Post.objects.create(post_type = 'a', title = 'Заголовок 2', text = 'Текст 2', author = a2)
+p3 = Post.objects.create(post_type = 'n', title = 'Заголовок 3', text = 'Текст 2', author = a1)
+
+p1.category.add(c1)
+p2.category.add(c2)
+p2.category.add(c3)
+p3.category.add(c4)
+
+cm1 = Comment.objects.create(text = 'Комментарий 1', post = p1, c_user = u2)
+cm2 = Comment.objects.create(text = 'Комментарий 2', post = p2, c_user = u1)
+cm3 = Comment.objects.create(text = 'Комментарий 3', post = p3, c_user = u2)
+cm4 = Comment.objects.create(text = 'Комментарий 4', post = p3, c_user = u2)
+
+p1.like()
+p2.like()
+p2.like()
+p3.dislike()
+cm1.dislike()
+cm3.like()
+
+a1.update_rating()
+a2.update_rating()
+
+Author.objects.all().order_by('-rating').values('author_user__username', 'rating').first()
+
+Post.objects.all().order_by('-rating').values('time', 'author__author_user__username', 'rating', 'title').first()
+Post.objects.all().order_by('-rating').first().preview()
+
+Post.objects.all().order_by('-rating').first().comment_set.all().values('time', 'c_user__username', 'rating', 'text')
